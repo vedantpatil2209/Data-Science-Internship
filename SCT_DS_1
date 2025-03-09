@@ -1,0 +1,40 @@
+import os
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+file_path ="C:/Users/INDIA/Downloads/demo dataset.xlsx"
+df = pd.read_csv("C:/Users/INDIA/Downloads/demo dataset.csv")
+
+
+if not os.path.exists(file_path):
+    raise FileNotFoundError("File not found!")
+
+# Identify columns
+Session_column = "Session_Duration (hours)"
+Calorie_column = "Calories_Burned"
+
+if Session_column not in df.columns:
+    raise KeyError(f"Missing column: {Session_column}")
+
+df = df[["Session_Duration (hours)", "Calories_Burned"]].dropna()
+df = df.sort_values(by=Calorie_column, ascending=True)
+
+if df.empty:
+    raise ValueError("No valid data found!")
+
+plt.figure(figsize=(15, 6))
+
+# Full KDE Plot (Just Line)
+sns.kdeplot(x=df[Session_column], color='Blue', linewidth=2)
+print(df)
+# Fill different regions with different colors
+sns.kdeplot(x=df[Session_column], color='Lightblue', fill=True, alpha=0.5, clip=(0.25, 1.0))  # Below 60 kg (Blue)
+sns.kdeplot(x=df[Session_column], color='Lightgreen', fill=True, alpha=0.5, clip=(1.0, 1.5))  # 60-100 kg (Green)
+sns.kdeplot(x=df[Session_column], color='Pink', fill=True, alpha=0.5, clip=(1.5, 2.25))  # Above 100 kg (Orange)
+
+plt.xlabel("Session_duration (hours)")
+plt.ylabel("Calorie_burned")
+plt.title("calories burned depending upon session duration")
+
+plt.show()
